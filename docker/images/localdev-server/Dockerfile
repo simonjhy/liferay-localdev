@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 RUN apt-get update && \
-    apt-get -y install \
+    apt-get -y install --fix-missing \
         apt-transport-https \
         bash \
         ca-certificates \
@@ -38,7 +38,7 @@ RUN mkdir -p /etc/apt/keyrings && \
 RUN apt-get update
 
 RUN apt-get dist-upgrade -y && \
-    apt-get -y install \
+    apt-get -y install --fix-missing \
     containerd.io \
     docker-ce \
     docker-ce-cli \
@@ -94,6 +94,8 @@ COPY workspace/temp_repo /workspace/temp_repo
 
 COPY workspace/build.gradle /workspace/build.gradle
 
+ENV https_proxy 192.168.50.252:7890
+
 # warm up gradle & yarn install
 RUN /workspace/gradlew --no-daemon :yarnInstall
 
@@ -108,7 +110,7 @@ RUN \
 
 ENV TRUST_STORES=system,java
 ENV CAROOT=/var/lib/caroot
-COPY rootCA.pem ${CAROOT}
+#COPY rootCA.pem ${CAROOT}
 
 RUN mkcert -install
 
